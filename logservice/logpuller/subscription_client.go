@@ -300,11 +300,11 @@ func (s *SubscriptionClient) Subscribe(
 		log.Panic("subscription client subscribe with zero TableID")
 		return
 	}
-	log.Info("subscribes span",
+	log.Info("QP subscribes span",
 		zap.Uint64("subscriptionID", uint64(subID)),
 		zap.String("span", span.String()))
 	defer func() {
-		log.Info("subscribes span done",
+		log.Info("QP subscribes span done",
 			zap.Uint64("subscriptionID", uint64(subID)),
 			zap.String("span", span.String()))
 	}()
@@ -334,7 +334,7 @@ func (s *SubscriptionClient) Unsubscribe(subID SubscriptionID) {
 	}
 	s.setTableStopped(rt)
 
-	log.Info("unsubscribe span success",
+	log.Info("QP unsubscribe span success",
 		zap.Uint64("subscriptionID", uint64(rt.subID)),
 		zap.Bool("exists", rt != nil))
 }
@@ -422,7 +422,7 @@ func (s *SubscriptionClient) Close(ctx context.Context) error {
 }
 
 func (s *SubscriptionClient) setTableStopped(rt *subscribedSpan) {
-	log.Info("subscription client starts to stop table",
+	log.Info("QP subscription client starts to stop table",
 		zap.Uint64("subscriptionID", uint64(rt.subID)))
 
 	// Set stopped to true so we can stop handling region events from the table.
@@ -437,7 +437,7 @@ func (s *SubscriptionClient) setTableStopped(rt *subscribedSpan) {
 }
 
 func (s *SubscriptionClient) onTableDrained(rt *subscribedSpan) {
-	log.Info("subscription client stop span is finished",
+	log.Info("QP subscription client stop span is finished",
 		zap.Uint64("subscriptionID", uint64(rt.subID)))
 
 	s.totalSpans.Lock()

@@ -422,6 +422,8 @@ func (c *EventCollector) runProcessMessage(ctx context.Context, inCh <-chan *mes
 				switch msg.(type) {
 				case commonEvent.Event:
 					event := msg.(commonEvent.Event)
+					log.Info("QP EventCollector.runProcessMessage handles a message",
+						zap.Any("event", event))
 					switch event.GetType() {
 					case commonEvent.TypeBatchResolvedEvent:
 						events := event.(*commonEvent.BatchResolvedEvent).Events

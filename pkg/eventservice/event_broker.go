@@ -44,7 +44,7 @@ const (
 	basicChannelSize    = 2048
 
 	defaultMaxBatchSize            = 128
-	defaultFlushResolvedTsInterval = 25 * time.Millisecond
+	defaultFlushResolvedTsInterval = 5000 * time.Millisecond
 )
 
 var (
@@ -275,6 +275,7 @@ func (c *eventBroker) tickTableTriggerDispatchers(ctx context.Context) {
 					// After all the events are sent, we send the watermark to the dispatcher.
 					c.sendWatermark(remoteID, dispatcherStat, endTs)
 					dispatcherStat.updateSentResolvedTs(endTs)
+					log.Info("QP dispatcher resolved ts advanced", zap.String("tableSpan", dispatcherStat.info.GetTableSpan().String()))
 				}
 				return true
 			})
@@ -666,6 +667,8 @@ func (c *eventBroker) flushResolvedTs(ctx context.Context, cache *resolvedTsCach
 	}
 	msg := &pevent.BatchResolvedEvent{}
 	msg.Events = append(msg.Events, cache.getAll()...)
+	log.Info("QP eventBroker.flushResolvedTs is called",
+		zap.Any("msg", msg))
 	tMsg := messaging.NewSingleTargetMessage(
 		serverID,
 		messaging.EventCollectorTopic,
@@ -778,6 +781,9 @@ func (c *eventBroker) close() {
 }
 
 func (c *eventBroker) onNotify(d *dispatcherStat, resolvedTs uint64, latestCommitTs uint64) {
+	log.Info("QP eventBroker.onNotify is called",
+		zap.String("tableSpan", d.info.GetTableSpan().String()),
+		zap.Uint64("resolvedTs", resolvedTs))
 	if d.onResolvedTs(resolvedTs) {
 		metricEventStoreOutputResolved.Inc()
 		d.onLatestCommitTs(latestCommitTs)
