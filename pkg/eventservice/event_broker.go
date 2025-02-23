@@ -110,6 +110,7 @@ func newEventBroker(
 	mc messaging.MessageSender,
 	tz *time.Location,
 ) *eventBroker {
+	log.Info("QP newEventBroker is called")
 	// These numbers are define by real test result.
 	// We noted that:
 	// 1. When the number of send message workers is too small, the lag of the resolvedTs keep in a high level.
@@ -814,6 +815,10 @@ func (c *eventBroker) addDispatcher(info DispatcherInfo) {
 
 	dispatcher := newDispatcherStat(startTs, info, filter, workerIndex, changefeedStatus)
 	if span.Equal(heartbeatpb.DDLSpan) {
+		log.Info("QP add a fake dispatcher for changefeed creation",
+			zap.String("topic", info.GetTopic()),
+			zap.String("changefeedID", changefeedID.Name()),
+			zap.Int64("tableID", span.TableID))
 		c.tableTriggerDispatchers.Store(id, dispatcher)
 		log.Info("table trigger dispatcher register dispatcher",
 			zap.Uint64("clusterID", c.tidbClusterID),

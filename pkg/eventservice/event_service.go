@@ -136,6 +136,10 @@ func (s *eventService) handleMessage(ctx context.Context, msg *messaging.TargetM
 }
 
 func (s *eventService) registerDispatcher(ctx context.Context, info DispatcherInfo) {
+	log.Info("QP registerDispatcher is called",
+		zap.String("topic", info.GetTopic()),
+		zap.String("changefeedID", info.GetChangefeedID().Name()),
+		zap.Int64("tableID", info.GetTableSpan().TableID))
 	clusterID := info.GetClusterID()
 	c, ok := s.brokers[clusterID]
 	if !ok {

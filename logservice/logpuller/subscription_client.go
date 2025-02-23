@@ -296,6 +296,8 @@ func (s *SubscriptionClient) Subscribe(
 	advanceResolvedTs func(ts uint64),
 	advanceInterval int64,
 ) {
+	log.Info("QP SubscriptionClient subs", zap.String("span", span.String()))
+
 	if span.TableID == 0 {
 		log.Panic("subscription client subscribe with zero TableID")
 		return
